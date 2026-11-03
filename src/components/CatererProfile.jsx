@@ -13,8 +13,7 @@ import {
   Check, 
   Copy,
   Info,
-  Pencil,
-  X
+  ExternalLink
 } from 'lucide-react';
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=900&q=80";
@@ -24,25 +23,10 @@ export default function CatererProfile({ caterer, onBack }) {
   const [copied, setCopied] = useState(false);
   const [bannerImg, setBannerImg] = useState(caterer.imageUrl);
 
-  // User-submitted reviews stored in localStorage
-  const [userReviews, setUserReviews] = useState(() => {
-    try {
-      const saved = localStorage.getItem(`caterer_reviews_${caterer.id}`);
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  const [showReviewModal, setShowReviewModal] = useState(false);
-  const [formAuthor, setFormAuthor] = useState('');
-  const [formRating, setFormRating] = useState(5);
-  const [formHoverRating, setFormHoverRating] = useState(0);
-  const [formEventType, setFormEventType] = useState('Wedding / Reception');
-  const [formComment, setFormComment] = useState('');
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-
   const cleanPhone = caterer.phone.replace(/[^0-9+]/g, '');
+
+  const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(`${caterer.name} ${caterer.area} ${caterer.city} reviews ratings`)}`;
+  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${caterer.name} ${caterer.fullAddress}`)}`;
 
   const handleCopyPhone = () => {
     navigator.clipboard.writeText(caterer.phone);
@@ -55,48 +39,6 @@ export default function CatererProfile({ caterer, onBack }) {
     if (type === 'Non-Veg') return 'non-veg';
     return 'mixed';
   };
-
-  const handleReviewSubmit = (e) => {
-    e.preventDefault();
-    if (!formAuthor.trim() || !formComment.trim()) return;
-
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-
-    const newRev = {
-      id: `user-rev-${Date.now()}`,
-      author: formAuthor.trim(),
-      rating: Number(formRating),
-      eventType: formEventType.trim() || 'General Catering',
-      date: formattedDate,
-      comment: formComment.trim(),
-      isUserSubmitted: true
-    };
-
-    const updated = [newRev, ...userReviews];
-    setUserReviews(updated);
-    try {
-      localStorage.setItem(`caterer_reviews_${caterer.id}`, JSON.stringify(updated));
-    } catch (err) {
-      console.error('Error saving review to localStorage', err);
-    }
-
-    setSubmitSuccess(true);
-    setTimeout(() => {
-      setSubmitSuccess(false);
-      setShowReviewModal(false);
-      setFormAuthor('');
-      setFormComment('');
-      setFormRating(5);
-    }, 1200);
-  };
-
-  const allReviews = [...userReviews, ...caterer.reviews];
-  const totalReviewsCount = caterer.reviewCount + userReviews.length;
 
   const activePackage = caterer.packages[selectedTier] || caterer.packages.normal;
 
@@ -345,48 +287,65 @@ export default function CatererProfile({ caterer, onBack }) {
         <section className="reviews-section">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a' }}>
-                Customer Credibility & Reviews
-              </h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
+                <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a' }}>
+                  Customer Credibility & Reviews
+                </h2>
+                <span style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: '0.3rem', 
+                  fontSize: '0.75rem', 
+                  background: '#f0fdf4', 
+                  color: '#15803d', 
+                  border: '1px solid #bbf7d0', 
+                  padding: '0.15rem 0.55rem', 
+                  borderRadius: '4px', 
+                  fontWeight: 700 
+                }}>
+                  <ShieldCheck size={13} /> Verified Event Testimonials
+                </span>
+              </div>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Direct feedback from customers who booked catering for events in Mumbai / Navi Mumbai / Thane.
+                Curated client feedback & public Google business credibility for events in Mumbai / Navi Mumbai / Thane.
               </p>
             </div>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                 <div className="rating-badge" style={{ fontSize: '1rem', padding: '0.4rem 0.75rem' }}>
                   <Star size={16} fill="#ffffff" color="#ffffff" />
                   <span>{caterer.rating.toFixed(1)}</span>
                 </div>
                 <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.95rem' }}>
-                  {totalReviewsCount} Total Reviews
+                  {caterer.reviewCount} Verified Reviews
                 </span>
               </div>
 
-              <button 
-                type="button" 
-                className="btn-write-review"
-                onClick={() => setShowReviewModal(true)}
+              <a 
+                href={googleSearchUrl}
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn-google-reviews"
+                title="View Google Reviews & ratings"
               >
-                <Pencil size={15} />
-                <span>Write a Review</span>
-              </button>
+                <svg width="17" height="17" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span>Google Reviews</span>
+                <ExternalLink size={13} color="#64748b" />
+              </a>
             </div>
           </div>
 
           <div className="reviews-grid">
-            {allReviews.map((rev) => (
+            {caterer.reviews.map((rev) => (
               <div key={rev.id} className="review-item-card">
                 <div className="review-author-row">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <span className="review-author">{rev.author}</span>
-                    {rev.isUserSubmitted && (
-                      <span className="review-badge-verified">
-                        <CheckCircle size={11} /> Verified Customer
-                      </span>
-                    )}
-                  </div>
+                  <span className="review-author">{rev.author}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                     {[...Array(5)].map((_, i) => (
                       <Star 
@@ -406,134 +365,52 @@ export default function CatererProfile({ caterer, onBack }) {
               </div>
             ))}
           </div>
-        </section>
-      </div>
 
-      {/* Add Review Modal */}
-      {showReviewModal && (
-        <div className="modal-backdrop" onClick={() => setShowReviewModal(false)}>
-          <div className="review-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="review-modal-header">
+          {/* Authentic Google Trust & Maps Card */}
+          <div className="google-trust-card">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+              <div className="google-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+              </div>
               <div>
-                <div className="review-modal-title">Write a Customer Review</div>
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                  Sharing feedback for {caterer.name}
+                <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0f172a' }}>
+                  Authentic & Spam-Free Credibility
+                </div>
+                <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+                  View real customer photos, live ratings, and location on Google Maps for <strong>{caterer.name}</strong>.
                 </div>
               </div>
-              <button 
-                type="button" 
-                className="review-modal-close"
-                onClick={() => setShowReviewModal(false)}
-                title="Close"
-              >
-                <X size={20} />
-              </button>
             </div>
 
-            {submitSuccess ? (
-              <div style={{ padding: '2.5rem 1.5rem', textAlign: 'center' }}>
-                <CheckCircle size={48} color="#16a34a" style={{ margin: '0 auto 1rem auto' }} />
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem' }}>
-                  Review Added Successfully!
-                </h3>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                  Thank you for your feedback. Your review is now visible on this caterer's profile.
-                </p>
-              </div>
-            ) : (
-              <form className="review-form" onSubmit={handleReviewSubmit}>
-                <div className="form-group">
-                  <label className="form-label">Your Rating *</label>
-                  <div className="star-rating-picker" onMouseLeave={() => setFormHoverRating(0)}>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        type="button"
-                        key={star}
-                        className="star-btn"
-                        onClick={() => setFormRating(star)}
-                        onMouseEnter={() => setFormHoverRating(star)}
-                        title={`${star} Star`}
-                      >
-                        <Star
-                          size={28}
-                          fill={(formHoverRating || formRating) >= star ? "#eab308" : "none"}
-                          color={(formHoverRating || formRating) >= star ? "#eab308" : "#cbd5e1"}
-                          strokeWidth={1.8}
-                        />
-                      </button>
-                    ))}
-                    <span style={{ marginLeft: '0.5rem', fontWeight: 700, fontSize: '0.9rem', color: '#0f172a' }}>
-                      {formHoverRating || formRating} / 5 Stars
-                    </span>
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label" htmlFor="review-author">Your Name *</label>
-                  <input
-                    id="review-author"
-                    type="text"
-                    className="form-input"
-                    placeholder="e.g. Sunil Kulkarni / Sneha Patel"
-                    value={formAuthor}
-                    onChange={(e) => setFormAuthor(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label" htmlFor="review-event">Function / Event Type</label>
-                  <select
-                    id="review-event"
-                    className="form-select"
-                    value={formEventType}
-                    onChange={(e) => setFormEventType(e.target.value)}
-                  >
-                    <option value="Wedding / Reception">Wedding / Reception</option>
-                    <option value="Birthday Party">Birthday Party</option>
-                    <option value="Housewarming (Griha Pravesh)">Housewarming (Griha Pravesh)</option>
-                    <option value="Family Function / Pooja">Family Function / Pooja</option>
-                    <option value="Corporate Event / Lunch">Corporate Event / Lunch</option>
-                    <option value="Anniversary Celebration">Anniversary Celebration</option>
-                    <option value="General Gathering">General Gathering</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label" htmlFor="review-comment">Your Feedback & Experience *</label>
-                  <textarea
-                    id="review-comment"
-                    className="form-textarea"
-                    placeholder="Tell other hosts about food taste, cleanliness, waiter service, punctuality..."
-                    value={formComment}
-                    onChange={(e) => setFormComment(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-                  <button
-                    type="button"
-                    className="btn-outline"
-                    style={{ padding: '0.6rem 1.1rem', fontSize: '0.9rem' }}
-                    onClick={() => setShowReviewModal(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn-call"
-                    style={{ padding: '0.6rem 1.3rem', fontSize: '0.9rem' }}
-                  >
-                    <Pencil size={15} />
-                    <span>Submit Review</span>
-                  </button>
-                </div>
-              </form>
-            )}
+            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+              <a
+                href={googleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-google-pill"
+              >
+                <MapPin size={14} />
+                <span>Open on Google Maps</span>
+              </a>
+              <a
+                href={googleSearchUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-google-reviews"
+                style={{ padding: '0.45rem 0.85rem', fontSize: '0.84rem' }}
+              >
+                <span>Read Google Reviews</span>
+                <ExternalLink size={13} />
+              </a>
+            </div>
           </div>
-        </div>
-      )}
+        </section>
+      </div>
 
       {/* Sticky Mobile Contact Bar */}
       <div className="mobile-sticky-bar">
