@@ -1149,18 +1149,18 @@ button {
   margin: 0 auto 1.5rem auto;
 }
 
-/* Google Reviews & Credibility Trust Styles */
+/* Google Links in Reviews */
 .btn-google-reviews {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   background: #ffffff;
   color: #1e293b;
   border: 1.5px solid #cbd5e1;
-  padding: 0.5rem 1rem;
+  padding: 0.45rem 0.85rem;
   border-radius: var(--radius-md);
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   text-decoration: none;
   transition: all 0.2s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -1173,50 +1173,5 @@ button {
   transform: translateY(-1px);
 }
 
-.google-trust-card {
-  margin-top: 1.5rem;
-  padding: 1.15rem 1.35rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.google-icon-box {
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  flex-shrink: 0;
-}
-
-.btn-google-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  background: #1a73e8;
-  color: #ffffff;
-  font-size: 0.85rem;
-  font-weight: 700;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: background 0.15s ease, transform 0.1s ease;
-}
-
-.btn-google-pill:hover {
-  background: #1557b0;
-  transform: translateY(-1px);
-  color: #ffffff;
-}
 
 

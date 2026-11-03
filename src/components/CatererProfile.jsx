@@ -287,38 +287,22 @@ export default function CatererProfile({ caterer, onBack }) {
         <section className="reviews-section">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
-                <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a' }}>
-                  Customer Credibility & Reviews
-                </h2>
-                <span style={{ 
-                  display: 'inline-flex', 
-                  alignItems: 'center', 
-                  gap: '0.3rem', 
-                  fontSize: '0.75rem', 
-                  background: '#f0fdf4', 
-                  color: '#15803d', 
-                  border: '1px solid #bbf7d0', 
-                  padding: '0.15rem 0.55rem', 
-                  borderRadius: '4px', 
-                  fontWeight: 700 
-                }}>
-                  <ShieldCheck size={13} /> Verified Event Testimonials
-                </span>
-              </div>
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a' }}>
+                Customer Reviews
+              </h2>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Curated client feedback & public Google business credibility for events in Mumbai / Navi Mumbai / Thane.
+                Direct feedback from customers who booked catering for events in Mumbai / Navi Mumbai / Thane.
               </p>
             </div>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                 <div className="rating-badge" style={{ fontSize: '1rem', padding: '0.4rem 0.75rem' }}>
                   <Star size={16} fill="#ffffff" color="#ffffff" />
                   <span>{caterer.rating.toFixed(1)}</span>
                 </div>
                 <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.95rem' }}>
-                  {caterer.reviewCount} Verified Reviews
+                  {caterer.reviewCount} Reviews
                 </span>
               </div>
 
@@ -336,6 +320,18 @@ export default function CatererProfile({ caterer, onBack }) {
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                 </svg>
                 <span>Google Reviews</span>
+                <ExternalLink size={13} color="#64748b" />
+              </a>
+
+              <a
+                href={googleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-google-reviews"
+                title="Open on Google Maps"
+              >
+                <MapPin size={15} color="var(--primary)" />
+                <span>Open on Google Maps</span>
                 <ExternalLink size={13} color="#64748b" />
               </a>
             </div>
@@ -364,50 +360,6 @@ export default function CatererProfile({ caterer, onBack }) {
                 <p className="review-text">"{rev.comment}"</p>
               </div>
             ))}
-          </div>
-
-          {/* Authentic Google Trust & Maps Card */}
-          <div className="google-trust-card">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-              <div className="google-icon-box">
-                <svg width="20" height="20" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                </svg>
-              </div>
-              <div>
-                <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0f172a' }}>
-                  Authentic & Spam-Free Credibility
-                </div>
-                <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
-                  View real customer photos, live ratings, and location on Google Maps for <strong>{caterer.name}</strong>.
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-              <a
-                href={googleMapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-google-pill"
-              >
-                <MapPin size={14} />
-                <span>Open on Google Maps</span>
-              </a>
-              <a
-                href={googleSearchUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-google-reviews"
-                style={{ padding: '0.45rem 0.85rem', fontSize: '0.84rem' }}
-              >
-                <span>Read Google Reviews</span>
-                <ExternalLink size={13} />
-              </a>
-            </div>
           </div>
         </section>
       </div>
